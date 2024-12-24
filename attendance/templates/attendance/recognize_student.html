@@ -1,0 +1,87 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recognize Student</title>
+    <link rel="stylesheet" href="{% static 'attendance/styles.css' %}">
+</head>
+<body>
+    <div class="container">
+        <h1>Recognize Student</h1>
+        <button id="recognizeButton">Start Recognition</button>
+        <div id="recognitionSection" style="display:none;">
+            <video id="video" width="640" height="480" autoplay></video>
+            <p id="recognitionResult">Recognising...</p>
+        </div>
+    </div>
+
+    <script>
+        const recognizeButton = document.getElementById('recognizeButton');
+        const recognitionSection = document.getElementById('recognitionSection');
+        const video = document.getElementById('video');
+        const recognitionResult = document.getElementById('recognitionResult');
+        let recognitionInterval;
+        let recognitionStartTime;
+
+        recognizeButton.addEventListener('click', function() {
+            recognizeButton.style.display = 'none';
+            recognitionSection.style.display = 'block';
+            startVideo();
+        });
+
+        function startVideo() {
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => {
+                    video.srcObject = stream;
+                    recognitionStartTime = new Date().getTime();
+                    recognizeFace();
+                })
+                .catch(err => {
+                    console.error("Error accessing the camera: " + err);
+                });
+        }
+
+        function recognizeFace() {
+            recognitionInterval = setInterval(function() {
+                const currentTime = new Date().getTime();
+                if (currentTime - recognitionStartTime > 180000) { // 3 minutes
+                    clearInterval(recognitionInterval);
+                    recognitionResult.textContent = "Please refresh or register your face again";
+                    return;
+                }
+
+                const canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                const context = canvas.getContext('2d');
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                const dataUrl = canvas.toDataURL('image/jpeg');
+                fetch('/recognize_face/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify({ image: dataUrl })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        clearInterval(recognitionInterval);
+                        recognitionResult.textContent = `Hello, ${data.name}! Recognized at ${data.time}`;
+                    } else if (data.message) {
+                        recognitionResult.textContent = data.message;
+                    } else {
+                        recognitionResult.textContent = 'Recognising...';
+                    }
+                })
+                .catch(err => {
+                    console.error('Error recognizing face: ' + err);
+                });
+            }, 1000); // Reduce interval to 1 second
+        }
+    </script>
+</body>
+</html>
