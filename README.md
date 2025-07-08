@@ -7,7 +7,7 @@ A smart student attendance system built with **Django** and **OpenCV** that uses
 ![Python](https://img.shields.io/badge/Python-3.10-blue?style=for-the-badge&logo=python)
 ![Django](https://img.shields.io/badge/Django-4.x-darkgreen?style=for-the-badge&logo=django)
 ![OpenCV](https://img.shields.io/badge/OpenCV-Face%20Detection-red?style=for-the-badge&logo=opencv)
-![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)
+
 
 ---
 
@@ -46,25 +46,25 @@ A smart student attendance system built with **Django** and **OpenCV** that uses
 
 ---
 
-## 📂 Project Structure
+## 🧪 Run Locally
 
-### `views.py`
-Handles the logic and processes for each route:
-- `index()`: Homepage  
-- `add_student()`: Render add student page  
-- `save_image()`: Save student face images  
-- `encode_faces()`: Encode student faces  
-- `clear_and_reencode_faces()`: Refresh face encodings  
-- `recognize_student()`: Render recognition page  
-- `recognize_face()`: Process recognition and log attendance  
-- `view_attendance()`: Show attendance logs
+Get the project up and running on your machine with a few simple steps! 🚀
 
-### `urls.py`
-Maps URLs to views:
-```plaintext
-/ → index  
-/add_student/ → add_student  
-/save_image/ → save_image  
-/recognize_student/ → recognize_student  
-/recognize_face/ → recognize_face  
-/view_attendance/ → view_attendance  
+```bash
+# Clone the repository
+
+
+# Navigate into the project directory
+cd student_attendance_system
+
+# Create a virtual environment
+virtualenv env
+
+# Activate the virtual environment (Windows)
+env\Scripts\activate
+
+# If requirements.txt is missing, install manually
+pip install django opencv deepface numpy scikit-learn joblib
+
+# Run the Django development server
+python manage.py runserver
