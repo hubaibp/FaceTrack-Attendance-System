@@ -52,6 +52,7 @@ Get the project up and running on your machine with a few simple steps! 🚀
 
 ```bash
 # Clone the repository
+https://github.com/hubaibp/FaceTrack-Attendance-System
 
 
 # Navigate into the project directory
